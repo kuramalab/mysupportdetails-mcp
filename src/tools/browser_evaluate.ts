@@ -14,7 +14,7 @@ export const inputSchema = {
 
 export async function handler(args: { script: string }) {
   const { page } = requireActive();
-  // Wrap in IIFE per accettare sia espressioni sia bodies.
+  // Wrap in an IIFE to accept both expressions and function bodies.
   const wrapped = `(async () => { ${args.script} })()`;
   const result = await page.evaluate<unknown>(wrapped);
   return jsonReply({ result });

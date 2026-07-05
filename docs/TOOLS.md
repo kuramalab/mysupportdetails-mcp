@@ -1,40 +1,40 @@
 # MCP Tools Schema
 
-Schema completo di tutti i tool esposti da `@kuramalab-io/mysupportdetails-mcp`. Compatibile con Claude Code, Cursor, Cline.
+Full schema of every tool exposed by `@kuramalab-io/mysupportdetails-mcp`. Compatible with Claude Code, Cursor, Cline.
 
-## Convenzioni
+## Conventions
 
-- Tutti gli input validati via Zod schema
-- Errori restituiti come `McpError` con code + message parseable dall'agente
-- Path filesystem sempre resolved via `os.homedir()` — cross-platform per default
-- Timeout default: 30s (override per tool sotto)
+- All inputs validated via a Zod schema
+- Errors returned as `McpError` with a code + message parseable by the agent
+- Filesystem paths always resolved via `os.homedir()` ... cross-platform by default
+- Default timeout: 30s (per-tool override below)
 
 ## Browser lifecycle
 
 ### `browser_open`
-Apre un browser + profilo. Se un contesto è già attivo, viene chiuso.
+Opens a browser + profile. If a context is already active, it is closed first.
 
 **Input**:
 ```typescript
 {
   browser: "chromium" | "firefox" | "webkit",
   profile?: string,           // default "default"
-  headed?: boolean,           // default true (browser VISIBILE) - vedi nota sotto
+  headed?: boolean,           // default true (VISIBLE browser) - see note below
   viewport?: { width: number, height: number }  // default 1440x900
 }
 ```
 
-**Nota `headed`**: il default `true` significa **finestra browser sempre visibile**. Per invertire globalmente serve env var esplicita `MSD_HEADLESS=1` al lancio del server MCP. Il parametro per-call ha precedenza sull'env var. Zero build-flag: nessun fork puo' invertire il default a livello di build.
+**Note on `headed`**: the default `true` means **the browser window is always visible**. To invert it globally you need the explicit env var `MSD_HEADLESS=1` when launching the MCP server. The per-call parameter takes precedence over the env var. Zero build-flag: no fork can invert the default at build time.
 
 **Output**: `{ contextId: string, browser: string, profile: string, viewport: {...}, headed: boolean }`
 
-**Errori**:
-- `INVALID_PROFILE_NAME` — nome contiene caratteri illegali
-- `BROWSER_LAUNCH_FAILED` — Playwright non riesce ad avviare (dep mancante ecc.)
-- `DISPLAY_UNAVAILABLE` — richiesto `headed: true` ma non c'e' display (es. Linux server senza X). Suggerisce come opt-in a headless (env var o parametro per-call).
+**Errors**:
+- `INVALID_PROFILE_NAME` ... name contains illegal characters
+- `BROWSER_LAUNCH_FAILED` ... Playwright cannot start (missing dep, etc.)
+- `DISPLAY_UNAVAILABLE` ... `headed: true` requested but there is no display (e.g. Linux server without X). Suggests how to opt in to headless (env var or per-call parameter).
 
 ### `browser_close`
-Chiude il contesto attivo. Salva metadata `last_used`.
+Closes the active context. Saves `last_used` metadata.
 
 **Input**: `{}`
 
@@ -43,7 +43,7 @@ Chiude il contesto attivo. Salva metadata `last_used`.
 ## Navigation
 
 ### `browser_navigate`
-GET su URL. Attende `load` event (configurabile).
+GET on a URL. Waits for the `load` event (configurable).
 
 **Input**:
 ```typescript
@@ -59,44 +59,44 @@ GET su URL. Attende `load` event (configurabile).
 ## Perception
 
 ### `browser_snapshot`
-Restituisce l'accessibility tree della pagina in formato struttura-per-agente (compatibile con `@playwright/mcp` convention: ogni elemento ha `ref` univoco richiamabile da tool successivi).
+Returns the page accessibility tree in an agent-friendly structured format (compatible with the `@playwright/mcp` convention: every element has a unique `ref` callable from subsequent tools).
 
 **Input**: `{}`
 
-**Output**: `{ tree: YamlSnapshot }` dove YamlSnapshot è la stessa struttura testuale usata da Playwright MCP ufficiale.
+**Output**: `{ tree: YamlSnapshot }` where YamlSnapshot is the same textual structure used by the official Playwright MCP.
 
 ### `browser_screenshot`
-Screenshot PNG.
+PNG screenshot.
 
 **Input**:
 ```typescript
 {
   full_page?: boolean,  // default false
-  path?: string,  // se assente, base64 nella response
-  quality?: number  // 1-100, solo jpeg
+  path?: string,  // if absent, base64 in the response
+  quality?: number  // 1-100, jpeg only
 }
 ```
 
 **Output**: `{ path: string } | { base64: string }`
 
 ### `browser_evaluate`
-Esegue JS in page context. Ritorna valore serializzato.
+Runs JS in the page context. Returns the serialized value.
 
 **Input**: `{ script: string }`
 
 **Output**: `{ result: unknown }` (JSON-serializable)
 
-**Sicurezza**: script eseguito nel sandbox del browser, non nel processo Node. Cross-origin restrictions applicate.
+**Security**: script executed inside the browser sandbox, not in the Node process. Cross-origin restrictions apply.
 
 ## Interaction
 
 ### `browser_click`
-Click su elemento tramite `ref` da precedente snapshot.
+Click an element via a `ref` from a previous snapshot.
 
 **Input**:
 ```typescript
 {
-  ref: string,  // es. "e12" da snapshot
+  ref: string,  // e.g. "e12" from snapshot
   button?: "left" | "right" | "middle"  // default "left"
 }
 ```
@@ -104,28 +104,28 @@ Click su elemento tramite `ref` da precedente snapshot.
 **Output**: `{ clicked: true }`
 
 ### `browser_type`
-Inserisce testo in un elemento (input/textarea/contenteditable).
+Type text into an element (input/textarea/contenteditable).
 
 **Input**:
 ```typescript
 {
   ref: string,
   text: string,
-  submit?: boolean  // se true, invia Enter dopo
+  submit?: boolean  // if true, sends Enter afterwards
 }
 ```
 
 **Output**: `{ typed: true }`
 
 ### `browser_press_key`
-Simula pressione tasto (Enter, Tab, Escape, ecc.).
+Simulate a keypress (Enter, Tab, Escape, etc.).
 
 **Input**: `{ key: string }`
 
 **Output**: `{ pressed: true }`
 
 ### `browser_wait_for`
-Attende condizione: selettore visibile / testo presente / timeout.
+Wait for a condition: selector visible / text present / timeout.
 
 **Input**:
 ```typescript
@@ -141,7 +141,7 @@ Attende condizione: selettore visibile / testo presente / timeout.
 ## Profile management
 
 ### `profile_list`
-Lista profili disponibili, filtrabile per browser.
+List available profiles, optionally filtered by browser.
 
 **Input**: `{ browser?: "chromium" | "firefox" | "webkit" }`
 
@@ -161,7 +161,7 @@ Lista profili disponibili, filtrabile per browser.
 ```
 
 ### `profile_create`
-Crea profilo vuoto (dir + registry entry).
+Create an empty profile (dir + registry entry).
 
 **Input**:
 ```typescript
@@ -174,12 +174,12 @@ Crea profilo vuoto (dir + registry entry).
 
 **Output**: `{ created: true, path: string }`
 
-**Errori**:
+**Errors**:
 - `PROFILE_EXISTS`
 - `INVALID_PROFILE_NAME`
 
 ### `profile_delete`
-Rimuove profilo (rm -rf dir + registry entry).
+Remove a profile (rm -rf dir + registry entry).
 
 **Input**:
 ```typescript
@@ -191,10 +191,10 @@ Rimuove profilo (rm -rf dir + registry entry).
 
 **Output**: `{ deleted: true }`
 
-**Nota**: se il profilo è il contesto attivo, viene chiuso prima della delete.
+**Note**: if the profile is the active context, it is closed before the delete.
 
 ### `profile_current`
-Info del profilo/browser attivo (se contesto aperto).
+Info on the active profile/browser (if a context is open).
 
 **Input**: `{}`
 
@@ -209,9 +209,9 @@ Info del profilo/browser attivo (se contesto aperto).
 }
 ```
 
-## Esempi di uso combinato
+## Combined usage examples
 
-### Prendi info device via mysupportdetails
+### Read device info via mysupportdetails
 ```
 1. browser_open({ browser: "chromium", profile: "default" })
 2. browser_navigate({ url: "https://www.mysupportdetails.com/" })
@@ -226,7 +226,7 @@ Info del profilo/browser attivo (se contesto aperto).
 5. browser_close()
 ```
 
-Restituisce JSON con tutti i valori device info.
+Returns JSON with every device info value.
 
 ### Cross-browser check
 ```
@@ -238,26 +238,26 @@ for browser in ['chromium', 'firefox', 'webkit']:
   browser_close()
 ```
 
-### Fingerprint diff tra profili
+### Fingerprint diff between profiles
 ```
 1. browser_open({ browser: "chromium", profile: "clean" })
 2. browser_navigate({ url: "https://www.mysupportdetails.com/web/browser-fingerprinting-test-check-your-privacy-exposure/" })
-3. browser_snapshot() -> analizza fingerprint score
+3. browser_snapshot() -> analyze fingerprint score
 4. browser_close()
-5. browser_open({ browser: "chromium", profile: "with-ublock" })  // profilo con extension
+5. browser_open({ browser: "chromium", profile: "with-ublock" })  // profile with extension
 6. browser_navigate({ url: "..." })
-7. browser_snapshot() -> confronta fingerprint score
+7. browser_snapshot() -> compare fingerprint score
 8. browser_close()
 ```
 
-## Estensioni non-MVP
+## Non-MVP extensions
 
-Sono candidate per v2 ma non implementate in v1:
+Candidates for v2 but not implemented in v1:
 
-- `browser_new_tab` — apre tab in stesso contesto
-- `browser_close_tab` — chiude tab specifica
+- `browser_new_tab` ... open a tab in the same context
+- `browser_close_tab` ... close a specific tab
 - `browser_list_tabs`
-- `browser_download` — trigger + salva file
-- `browser_upload` — file input
-- `browser_network_intercept` — mock/log risposte HTTP
-- `browser_console_messages` — leggi console log della pagina
+- `browser_download` ... trigger + save file
+- `browser_upload` ... file input
+- `browser_network_intercept` ... mock/log HTTP responses
+- `browser_console_messages` ... read the page console log

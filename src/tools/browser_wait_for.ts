@@ -21,10 +21,10 @@ export async function handler(args: { selector?: string; text?: string; timeout_
   if (args.selector !== undefined) {
     await page.waitForSelector(args.selector, { timeout });
   } else if (args.text !== undefined) {
-    // Playwright locator().waitFor() sfrutta l'engine text= builtin: piu'
-    // affidabile del waitForFunction su document.body (che non e' tipato
-    // lato Node e richiederebbe lib "DOM" con conseguente inquinamento
-    // dell'ambient type-check dell'app server-side).
+    // Playwright locator().waitFor() uses the built-in text= engine: more
+    // reliable than waitForFunction on document.body (which is not typed on
+    // the Node side and would require the "DOM" lib, polluting the ambient
+    // type-check of the server-side app).
     await page.getByText(args.text, { exact: false }).first().waitFor({
       state: 'visible',
       timeout,

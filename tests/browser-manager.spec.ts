@@ -1,38 +1,38 @@
 import { describe, it, expect } from 'vitest';
 import { resolveHeaded } from '../src/browser-manager.js';
 
-// REGOLA NON NEGOZIABILE: il browser deve partire VISIBILE per default.
-// Un cambio silenzioso a headless-by-default renderebbe invisibile all'utente
-// cosa fanno gli agenti AI sulla sua sessione autenticata. Questo test hard-blocka
-// la CI se qualcuno inverte il default. Vedi docs/SECURITY.md sezione
-// "Browser SEMPRE visibile di default".
-describe('resolveHeaded (REGOLA NON NEGOZIABILE)', () => {
-  it('default deve essere true (browser VISIBILE)', () => {
+// NON-NEGOTIABLE RULE: the browser must start VISIBLE by default.
+// A silent switch to headless-by-default would make it invisible to the user
+// what the AI agents are doing on their authenticated session. This test hard-blocks
+// CI if someone flips the default. See docs/SECURITY.md, section
+// "Browser ALWAYS visible by default".
+describe('resolveHeaded (NON-NEGOTIABLE RULE)', () => {
+  it('default must be true (VISIBLE browser)', () => {
     expect(resolveHeaded({}, {})).toBe(true);
   });
 
-  it('MSD_HEADLESS=1 rende headless', () => {
+  it('MSD_HEADLESS=1 makes it headless', () => {
     expect(resolveHeaded({}, { MSD_HEADLESS: '1' })).toBe(false);
   });
 
-  it('MSD_HEADLESS=true rende headless', () => {
+  it('MSD_HEADLESS=true makes it headless', () => {
     expect(resolveHeaded({}, { MSD_HEADLESS: 'true' })).toBe(false);
   });
 
-  it('MSD_HEADLESS=0 mantiene default true', () => {
+  it('MSD_HEADLESS=0 keeps the default true', () => {
     expect(resolveHeaded({}, { MSD_HEADLESS: '0' })).toBe(true);
   });
 
-  it('parametro per-call headed:false sovrascrive env', () => {
+  it('per-call parameter headed:false overrides env', () => {
     expect(resolveHeaded({ headed: false }, { MSD_HEADLESS: '0' })).toBe(false);
   });
 
-  it('parametro per-call headed:true sovrascrive MSD_HEADLESS=1', () => {
-    // Il parametro per-call ha SEMPRE la precedenza massima.
+  it('per-call parameter headed:true overrides MSD_HEADLESS=1', () => {
+    // The per-call parameter ALWAYS has the highest precedence.
     expect(resolveHeaded({ headed: true }, { MSD_HEADLESS: '1' })).toBe(true);
   });
 
-  it('MSD_HEADLESS non riconosciuto (yes/on/random) mantiene default true', () => {
+  it('unrecognized MSD_HEADLESS (yes/on/random) keeps the default true', () => {
     expect(resolveHeaded({}, { MSD_HEADLESS: 'yes' })).toBe(true);
     expect(resolveHeaded({}, { MSD_HEADLESS: 'on' })).toBe(true);
   });

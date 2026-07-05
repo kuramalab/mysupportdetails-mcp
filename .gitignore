@@ -35,5 +35,5 @@ playwright/.cache/
 .env.local
 .env.*.local
 
-# Profile testing (mai committare profili con cookie/token)
+# Profile testing (never commit profiles with cookies/tokens)
 test-profiles/

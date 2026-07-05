@@ -1,82 +1,82 @@
 # @kuramalab-io/mysupportdetails-mcp
 
-> **MCP server specializzato per QA, Quality Assurance e test automation** — agente AI che pilota browser reali (Chromium / Firefox / WebKit) e profili persistenti multipli, con **runtime switching** tra profili e browser senza restart.
+> **MCP server for QA and test automation** ... an AI agent that drives real browsers (Chromium / Firefox / WebKit) and multiple persistent profiles, with **runtime switching** between profiles and browsers without restarting.
 
-Perfetto per team QA che vogliono automatizzare test cross-browser, cross-account, regressione visiva, verifica localizzazione, audit di privacy/fingerprint. Compatibile con Claude Code, Cursor, Cline e qualsiasi client MCP-standard.
+Built for QA teams that want to automate cross-browser tests, cross-account flows, visual regression, localization checks, and privacy/fingerprint audits. Works with Claude Code, Cursor, Cline, and any MCP-standard client.
 
-Progettato con **[MySupportDetails.com](https://www.mysupportdetails.com/)** come showcase naturale per verificare cosa vede il browser/profilo in ogni combinazione.
+Designed with **[MySupportDetails.com](https://www.mysupportdetails.com/)** as a natural showcase to verify what the browser/profile sees in every combination.
 
-## Casi d'uso QA / Testing (primari)
+## QA / Testing use cases (primary)
 
-- **Regression testing cross-browser**: stesso flusso in Chromium, Firefox e WebKit → confronto DOM/screenshot automatico
-- **Testing multi-account**: profilo `free-user`, profilo `premium-user`, profilo `admin` → l'agente verifica che ogni ruolo veda cio' che deve
-- **Localization QA**: profilo per lingua/paese (cookie `msd_lang`, timezone, geo), l'agente verifica title/label/prezzi tradotti
-- **Onboarding e flussi first-time**: profilo pulito ogni run → repro affidabile "cosa vede un utente nuovo"
-- **Privacy/fingerprint audit**: profilo con extension privacy vs profilo vergine → l'agente misura la differenza
-- **Cookie banner / consent flow**: profilo pre-consenso vs post-consenso → verifica che tracker non partano prima
-- **A/B testing manuale**: profili con feature flag diversi → l'agente confronta due varianti UX in un solo prompt
+- **Cross-browser regression testing**: same flow in Chromium, Firefox, and WebKit ... automatic DOM/screenshot comparison
+- **Multi-account testing**: `free-user` profile, `premium-user` profile, `admin` profile ... the agent verifies that each role sees what it should
+- **Localization QA**: one profile per language/country (cookie `msd_lang`, timezone, geo), the agent checks translated titles, labels, and prices
+- **Onboarding and first-time flows**: clean profile on every run ... reliable "what a new user sees" repro
+- **Privacy/fingerprint audit**: profile with a privacy extension vs a clean profile ... the agent measures the difference
+- **Cookie banner / consent flow**: pre-consent profile vs post-consent profile ... verify trackers do not fire before opt-in
+- **Manual A/B testing**: profiles with different feature flags ... the agent compares two UX variants in a single prompt
 
-## Casi d'uso adiacenti
+## Adjacent use cases
 
 - Security research (headers, CSP, response leakage)
-- RPA (form filling ricorrenti, check stato ordini)
-- Content scraping etico contro il tuo dominio
+- RPA (recurring form filling, order status checks)
+- Ethical content scraping against your own domain
 
-Sviluppato da [KuramaLab](https://github.com/KuramaLab). MIT license. Multi-piattaforma: **macOS, Linux, Windows**.
+Built by [KuramaLab](https://github.com/KuramaLab). MIT license. Cross-platform: **macOS, Linux, Windows**.
 
-Source: [github.com/KuramaLab/mysupportdetails-mcp](https://github.com/KuramaLab/mysupportdetails-mcp) — npm: [`@kuramalab-io/mysupportdetails-mcp`](https://www.npmjs.com/package/@kuramalab-io/mysupportdetails-mcp).
+Source: [github.com/KuramaLab/mysupportdetails-mcp](https://github.com/KuramaLab/mysupportdetails-mcp) ... npm: [`@kuramalab-io/mysupportdetails-mcp`](https://www.npmjs.com/package/@kuramalab-io/mysupportdetails-mcp).
 
-## Comportamento di default: browser VISIBILE
+## Default behavior: browser is VISIBLE
 
-`mysupportdetails-mcp` apre sempre il browser **in modalita' headed (finestra visibile)**. Questa non e' una configurazione da attivare, e' il default e va tenuto cosi'.
+`mysupportdetails-mcp` always opens the browser in **headed mode (visible window)**. This is not an option to enable, it is the default and it stays that way.
 
-Motivo: quando l'agente AI naviga per conto tuo, tu devi **vedere in tempo reale** cosa sta facendo. Zero silent execution. Se qualcosa va storto (login su sito sbagliato, click imprevisto, popup malevolo) te ne accorgi subito e killi.
+Reason: when an AI agent browses on your behalf, you need to **see in real time** what it is doing. Zero silent execution. If something goes wrong (login on the wrong site, unexpected click, malicious popup) you notice immediately and can kill it.
 
-Se ti serve headless (CI, batch, server senza display) devi opt-in esplicitamente in uno dei modi seguenti:
+If you need headless (CI, batch, headless servers) you must opt in explicitly in one of the following ways:
 
-- **Env var globale**: `MSD_HEADLESS=1` prima del comando (vale per tutte le chiamate dello stesso server).
-- **Parametro per-call**: `browser_open({..., headed: false})` nel singolo tool call.
+- **Global env var**: `MSD_HEADLESS=1` before the command (applies to all calls of the same server).
+- **Per-call parameter**: `browser_open({..., headed: false})` in a single tool call.
 
-Priorita': parametro per-call sovrascrive env var. Se ne' l'uno ne' l'altro sono settati -> headed. Sempre.
+Precedence: per-call parameter overrides env var. If neither is set the browser is headed. Always.
 
-Questa scelta e' documentata sia in [SECURITY.md](docs/SECURITY.md) (perche' headed e' anche una feature di security) sia in [ARCHITECTURE.md](docs/ARCHITECTURE.md) (perche' non e' modificabile a livello di build).
+This choice is documented in both [SECURITY.md](docs/SECURITY.md) (headed is also a security feature) and [ARCHITECTURE.md](docs/ARCHITECTURE.md) (it is not build-time configurable).
 
-## Client MCP compatibili
+## Compatible MCP clients
 
-`mysupportdetails-mcp` implementa Model Context Protocol standard con transport **stdio JSON-RPC**. Funziona con qualsiasi client MCP-compatibile senza modifiche:
+`mysupportdetails-mcp` implements the standard Model Context Protocol with **stdio JSON-RPC** transport. It works with any MCP-compatible client with no changes:
 
-| Client | Config file | Note |
+| Client | Config file | Notes |
 |---|---|---|
-| Claude Code (CLI) | auto via `claude mcp add` | Comando ufficiale sotto |
-| Claude Desktop | `claude_desktop_config.json` | Stesso schema `mcpServers` |
+| Claude Code (CLI) | auto via `claude mcp add` | Official command below |
+| Claude Desktop | `claude_desktop_config.json` | Same `mcpServers` schema |
 | Cursor | `~/.cursor/mcp_settings.json` | |
 | Cline (VSCode) | `cline_mcp_settings.json` | |
 | Continue.dev | `~/.continue/mcp.json` | |
 | Zed editor | `~/.config/zed/settings.json` | MCP support 2026+ |
 | Cody (Sourcegraph) | Cody MCP settings | |
-| Hermes / OpenClaw / LLM con wrapper MCP | vendor-specific | Purche' parlino MCP stdio |
-| n8n / Zapier con connector MCP | node subprocess | Esegue mysupportdetails-mcp come CLI |
+| Hermes / OpenClaw / LLMs with MCP wrapper | vendor-specific | As long as they speak MCP stdio |
+| n8n / Zapier with MCP connector | node subprocess | Runs mysupportdetails-mcp as a CLI |
 
-Nessuna dipendenza vendor-lock: zero API key cloud, zero binding a modello LLM. Se il client parla MCP, funziona.
+No vendor lock-in: zero cloud API keys, zero binding to a specific LLM model. If the client speaks MCP, it works.
 
-## Perché serve
+## Why it exists
 
-`@playwright/mcp` ufficiale accetta browser e profilo **come flag statici all'avvio** del server. Se vuoi cambiare browser o profilo al volo devi killare il server e riavviarlo. `mysupportdetails-mcp` risolve questo:
+The official `@playwright/mcp` accepts browser and profile **as static flags at server startup**. If you want to switch browser or profile on the fly you must kill the server and restart it. `mysupportdetails-mcp` solves this:
 
-- Runtime switching: cambio browser o profilo tra un tool call e l'altro, zero restart
-- Profili named con metadata (nome, ultimo uso, dimensione, browser target)
-- Confronto side-by-side tra profili nello stesso prompt
-- Tool CRUD sui profili invocabili dall'agente
+- Runtime switching: change browser or profile between tool calls, zero restart
+- Named profiles with metadata (name, last used, size, target browser)
+- Side-by-side comparison across profiles in the same prompt
+- CRUD tools for profiles callable by the agent
 
-## Installazione
+## Installation
 
-Con Claude Code:
+With Claude Code:
 
 ```
 claude mcp add -s user playwright -- npx -y @kuramalab-io/mysupportdetails-mcp@latest
 ```
 
-Con Cursor / Cline: aggiungi al file `mcp_settings.json`:
+With Cursor / Cline: add to your `mcp_settings.json`:
 
 ```json
 {
@@ -89,112 +89,112 @@ Con Cursor / Cline: aggiungi al file `mcp_settings.json`:
 }
 ```
 
-La prima esecuzione scarica i browser Playwright (~300 MB, solo una volta).
+The first run downloads the Playwright browsers (~300 MB, one time only).
 
-## Quickstart in 30 secondi
+## 30-second quickstart
 
-Nella tua sessione Claude Code / Cursor:
+In your Claude Code / Cursor session:
 
 ```
-Apri Chromium con profilo "test-user-1", vai su
-https://www.mysupportdetails.com/, aspetta 3 secondi,
-restituisci JSON con browser, OS, IP, ISP, screen resolution.
+Open Chromium with profile "test-user-1", go to
+https://www.mysupportdetails.com/, wait 3 seconds, and
+return JSON with browser, OS, IP, ISP, and screen resolution.
 
-Poi fai la stessa cosa con Firefox profilo "test-user-2" e
-confronta le due risposte.
+Then do the same with Firefox using profile "test-user-2"
+and compare the two responses.
 ```
 
-L'agente chiama in ordine:
+The agent calls, in order:
 - `browser_open({browser: "chromium", profile: "test-user-1"})`
 - `browser_navigate({url: "https://www.mysupportdetails.com/"})`
 - `browser_snapshot()`
 - `browser_close()`
 - `browser_open({browser: "firefox", profile: "test-user-2"})`
-- (ripete)
+- (repeats)
 
-E ti restituisce l'analisi comparata.
+And returns the compared analysis.
 
-## Requisiti sistema
+## System requirements
 
-| Requisito | Versione |
+| Requirement | Version |
 |---|---|
 | Node.js | 18.x, 20.x, 22.x |
-| Sistema operativo | macOS 11+ / Linux (glibc 2.31+) / Windows 10+ |
-| RAM | 2 GB liberi (Playwright + browser) |
-| Disco | 500 MB (browser Playwright + profili) |
-| Rete | necessaria alla prima install (download browser) |
+| Operating system | macOS 11+ / Linux (glibc 2.31+) / Windows 10+ |
+| RAM | 2 GB free (Playwright + browser) |
+| Disk | 500 MB (Playwright browsers + profiles) |
+| Network | required on first install (browser download) |
 
-Playwright installa **le sue versioni di Chromium/Firefox/WebKit** dentro la cache Node (~/.cache/ms-playwright). Non tocca i browser installati sul sistema.
+Playwright installs **its own versions of Chromium/Firefox/WebKit** into the Node cache (~/.cache/ms-playwright). It does not touch browsers installed system-wide.
 
-## Path profili per OS
+## Profile paths per OS
 
-I profili vivono in `~/.msd/profiles/{browser}/{profile-name}/`:
+Profiles live in `~/.msd/profiles/{browser}/{profile-name}/`:
 
-- **macOS**: `/Users/tuoutente/.mysupportdetails-mcp/profiles/chromium/test-user-1/`
-- **Linux**: `/home/tuoutente/.mysupportdetails-mcp/profiles/firefox/personale/`
-- **Windows**: `C:\Users\tuoutente\.msd\profiles\webkit\lavoro\`
+- **macOS**: `/Users/youruser/.mysupportdetails-mcp/profiles/chromium/test-user-1/`
+- **Linux**: `/home/youruser/.mysupportdetails-mcp/profiles/firefox/personal/`
+- **Windows**: `C:\Users\youruser\.msd\profiles\webkit\work\`
 
-Path risolto via `os.homedir()` di Node — funziona identico ovunque.
+The path is resolved via Node's `os.homedir()` ... works identically everywhere.
 
-Un file `~/.msd/profiles.json` mantiene il registro con metadati (nome, browser, created, last_used, size_mb, note).
+A `~/.msd/profiles.json` file maintains the registry with metadata (name, browser, created, last_used, size_mb, notes).
 
-## Sicurezza dei profili
+## Profile security
 
-I profili contengono cookie, localStorage, IndexedDB, cache — **inclusi token di login attivi**. Sono salvati in chiaro sul disco (stesso comportamento del profilo Chrome di sistema).
+Profiles contain cookies, localStorage, IndexedDB, and cache ... **including active login tokens**. They are stored unencrypted on disk (same behavior as the system Chrome profile).
 
-**Non usare mysupportdetails-mcp su macchine condivise** senza cifratura del disco (FileVault macOS, BitLocker Windows, LUKS Linux). Vedi [SECURITY.md](docs/SECURITY.md) per dettagli.
+**Do not run mysupportdetails-mcp on shared machines** without full-disk encryption (FileVault on macOS, BitLocker on Windows, LUKS on Linux). See [SECURITY.md](docs/SECURITY.md) for details.
 
-## Tool esposti (v0.1.0)
+## Exposed tools (v0.1.0)
 
-Vedi [TOOLS.md](docs/TOOLS.md) per schema completo.
+See [TOOLS.md](docs/TOOLS.md) for the full schema.
 
-- `browser_open` — apre browser + profilo
-- `browser_close` — chiude contesto attivo
-- `browser_navigate` — GET URL
-- `browser_snapshot` — DOM accessibility tree (agente-friendly)
-- `browser_click` — click su ref elemento
-- `browser_type` — inserisce testo
-- `browser_evaluate` — esegue JS in pagina
-- `browser_screenshot` — salva PNG
-- `profile_list` — lista profili
-- `profile_create` — nuovo profilo vuoto
-- `profile_delete` — rimuove profilo
-- `profile_current` — info profilo attivo
+- `browser_open` ... open browser + profile
+- `browser_close` ... close active context
+- `browser_navigate` ... GET URL
+- `browser_snapshot` ... DOM accessibility tree (agent-friendly)
+- `browser_click` ... click on element ref
+- `browser_type` ... type text
+- `browser_evaluate` ... run JS in the page
+- `browser_screenshot` ... save PNG
+- `profile_list` ... list profiles
+- `profile_create` ... new empty profile
+- `profile_delete` ... remove profile
+- `profile_current` ... info on the active profile
 
-## Esempi
+## Examples
 
-Vedi cartella `examples/`:
+See the `examples/` folder:
 
-- `multi-account-test.md` — test cross-account (2 login diversi, stesso sito)
-- `cross-browser-audit.md` — apre stesso sito in Chromium/Firefox/WebKit, confronta rendering
-- `fingerprint-diff.md` — apre mysupportdetails.com con profili senza/con extension privacy, confronta fingerprint
+- `multi-account-test.md` ... cross-account test (2 different logins, same site)
+- `cross-browser-audit.md` ... open the same site in Chromium/Firefox/WebKit, compare rendering
+- `fingerprint-diff.md` ... open mysupportdetails.com with profiles with/without a privacy extension, compare fingerprints
 
-## Confronto con @playwright/mcp
+## Comparison with @playwright/mcp
 
-| Feature | @playwright/mcp ufficiale | @kuramalab-io/mysupportdetails-mcp |
+| Feature | @playwright/mcp official | @kuramalab-io/mysupportdetails-mcp |
 |---|---|---|
-| Chromium / Firefox / WebKit | ✓ flag `--browser` (statico) | ✓ runtime switching |
-| Profilo persistente | ✓ flag `--user-data-dir` (statico) | ✓ runtime switching |
-| Profili multipli named | ✗ (uno per server) | ✓ N con metadata |
-| CRUD profili dall'agente | ✗ | ✓ `profile_*` tool |
-| Cross-profile in un prompt | ✗ | ✓ first-class |
-| Encryption at-rest | ✗ | roadmap v2 (opt-in) |
-| Cross-platform | ✓ | ✓ |
+| Chromium / Firefox / WebKit | yes, `--browser` flag (static) | yes, runtime switching |
+| Persistent profile | yes, `--user-data-dir` flag (static) | yes, runtime switching |
+| Multiple named profiles | no (one per server) | yes, N with metadata |
+| Profile CRUD from the agent | no | yes, `profile_*` tools |
+| Cross-profile in one prompt | no | yes, first-class |
+| Encryption at-rest | no | v2 roadmap (opt-in) |
+| Cross-platform | yes | yes |
 
 ## Roadmap
 
-Vedi [ROADMAP.md](docs/ROADMAP.md).
+See [ROADMAP.md](docs/ROADMAP.md).
 
-- **v0.1.0** MVP: multi-browser + un profilo default per browser
-- **v0.2.0** profili multipli named + CRUD
-- **v0.3.0** runtime switching senza restart contesto
-- **v0.4.0** esempi + doc completa
-- **v1.0.0** publish npm public + Product Hunt / HN launch
+- **v0.1.0** MVP: multi-browser + one default profile per browser
+- **v0.2.0** multiple named profiles + CRUD
+- **v0.3.0** runtime switching without restarting the context
+- **v0.4.0** examples + full docs
+- **v1.0.0** public npm publish + Product Hunt / HN launch
 
-## Contribuire
+## Contributing
 
-Issue e PR benvenute. Vedi [CONTRIBUTING.md](CONTRIBUTING.md).
+Issues and PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT © 2026 KuramaLab
+MIT (c) 2026 KuramaLab

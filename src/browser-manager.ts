@@ -21,17 +21,17 @@ interface HeadedEnv {
 }
 
 /**
- * Resolver dell'opzione headed.
+ * Resolver for the headed option.
  *
- * Precedenza (dalla piu' alta alla piu' bassa):
- * 1. Parametro per-call `headed: boolean`
- * 2. Env var `MSD_HEADLESS=1` (=> headed false, opt-in a headless)
- * 3. Default `true` (browser VISIBILE)
+ * Precedence (highest to lowest):
+ * 1. Per-call parameter `headed: boolean`
+ * 2. Env var `MSD_HEADLESS=1` (=> headed false, opt-in to headless)
+ * 3. Default `true` (VISIBLE browser)
  *
- * REGOLA NON NEGOZIABILE: il default e' `true`. Un test unit hard-block la CI
- * se il default cambia. Vedi docs/SECURITY.md.
+ * NON-NEGOTIABLE RULE: the default is `true`. A required unit test hard-blocks CI
+ * if the default changes. See docs/SECURITY.md.
  *
- * Estratto in funzione pura per essere testabile senza spawn browser reale.
+ * Extracted as a pure function so it can be tested without spawning a real browser.
  */
 export function resolveHeaded(input: HeadedInput, env: HeadedEnv): boolean {
   if (input.headed !== undefined) return input.headed;
@@ -65,7 +65,7 @@ export interface OpenResult {
 }
 
 export async function open(input: OpenInput): Promise<OpenResult> {
-  // Chiudi contesto precedente se presente.
+  // Close any previous context.
   if (active !== null) {
     await close();
   }
@@ -80,7 +80,7 @@ export async function open(input: OpenInput): Promise<OpenResult> {
       headless: !headed,
       viewport,
     });
-    // launchPersistentContext restituisce contesto con almeno una page vuota.
+    // launchPersistentContext returns a context with at least one empty page.
     const pages = context.pages();
     const page = pages.length > 0 ? pages[0] as Page : await context.newPage();
     const openedAt = new Date().toISOString();
@@ -102,7 +102,7 @@ export async function open(input: OpenInput): Promise<OpenResult> {
     };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    // Su Linux senza display headed non parte. Suggeriamo opt-in headless.
+    // On Linux without a display headed will not start. Suggest opt-in headless.
     if (headed && /Missing X server|DISPLAY|Xvfb/i.test(msg)) {
       throw new Error(
         `DISPLAY_UNAVAILABLE: cannot open headed browser on this system. ` +
@@ -119,7 +119,7 @@ export async function close(): Promise<void> {
   try {
     await context.close();
   } catch {
-    // Silente: se il context era gia' morto, non ci interessa.
+    // Silent: if the context was already dead, we do not care.
   }
   markLastUsed(browser, profile);
   active = null;
@@ -136,7 +136,7 @@ export function requireActive(): ActiveContext {
   return active;
 }
 
-// Solo per test: reset state senza toccare browser reali.
+// Test-only: reset state without touching real browsers.
 export function _resetForTest(): void {
   active = null;
 }

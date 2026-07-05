@@ -11,10 +11,10 @@ export const inputSchema = {};
 
 export async function handler(_args: Record<string, never>) {
   const { page } = requireActive();
-  // Playwright ariaSnapshot() restituisce YAML dell'accessibility tree, formato
-  // ideale per gli LLM (piu' compatto del JSON e semanticamente strutturato).
-  // Stabile dal Playwright 1.44+ e raccomandato al posto della vecchia
-  // API page.accessibility.snapshot() (rimossa dal 1.48).
+  // Playwright ariaSnapshot() returns YAML for the accessibility tree, an ideal
+  // format for LLMs (more compact than JSON and semantically structured).
+  // Stable since Playwright 1.44+ and recommended over the older
+  // page.accessibility.snapshot() API (removed in 1.48).
   const snapshot = await page.locator('body').ariaSnapshot();
   return jsonReply({
     url: page.url(),

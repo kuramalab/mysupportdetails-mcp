@@ -1,146 +1,146 @@
 # Roadmap
 
-## v0.1.0 — MVP funzionale (target 5-7 giorni dev)
+## v0.1.0 ... functional MVP (target 5-7 dev days)
 
-**Obiettivo**: MCP server installabile via `npx`, apre browser + navigate + snapshot. Zero profili multipli, un profilo default per browser.
+**Goal**: MCP server installable via `npx`, opens a browser + navigate + snapshot. No multi-profile, one default profile per browser.
 
 - [ ] Scaffold repo: package.json, tsconfig, esbuild config
-- [ ] `src/server.ts` con SDK MCP stdio transport
-- [ ] `src/browser-manager.ts` versione base (singleton context)
-- [ ] Tool `browser_open` (chromium/firefox/webkit, profilo hardcoded "default")
+- [ ] `src/server.ts` with the SDK MCP stdio transport
+- [ ] `src/browser-manager.ts` base version (singleton context)
+- [ ] Tool `browser_open` (chromium/firefox/webkit, hardcoded profile "default")
 - [ ] Tool `browser_close`
 - [ ] Tool `browser_navigate`
 - [ ] Tool `browser_snapshot` (accessibility tree)
 - [ ] Tool `browser_screenshot` (PNG)
-- [ ] README con install `claude mcp add ...`
-- [ ] Test unit su browser-manager state machine
-- [ ] Test E2E: install locale + navigate mysupportdetails + verify title
+- [ ] README with `claude mcp add ...` install
+- [ ] Unit tests on the browser-manager state machine
+- [ ] E2E test: local install + navigate mysupportdetails + verify title
 
-Deliverable: `npm publish @kuramalab-io/mysupportdetails-mcp@0.1.0` funzionante su macOS/Linux/Windows.
+Deliverable: `npm publish @kuramalab-io/mysupportdetails-mcp@0.1.0` working on macOS/Linux/Windows.
 
-## v0.2.0 — Profili named + CRUD (target +3-4 giorni)
+## v0.2.0 ... named profiles + CRUD (target +3-4 days)
 
-- [ ] `src/profile-store.ts` con registry JSON
+- [ ] `src/profile-store.ts` with JSON registry
 - [ ] Tool `profile_list`
 - [ ] Tool `profile_create`
 - [ ] Tool `profile_delete`
 - [ ] Tool `profile_current`
-- [ ] `browser_open` accetta `profile: string` (default se omesso)
-- [ ] Path validation + confinamento (no traversal)
-- [ ] Test filesystem via memfs
+- [ ] `browser_open` accepts `profile: string` (default if omitted)
+- [ ] Path validation + confinement (no traversal)
+- [ ] Filesystem tests via memfs
 
-Deliverable: profili multipli persistenti utilizzabili.
+Deliverable: multiple persistent profiles usable end-to-end.
 
-## v0.3.0 — Runtime switching + interazione (target +3-4 giorni)
+## v0.3.0 ... runtime switching + interaction (target +3-4 days)
 
-- [ ] Tool `browser_click` (usa ref da snapshot)
+- [ ] Tool `browser_click` (uses ref from snapshot)
 - [ ] Tool `browser_type`
-- [ ] Tool `browser_evaluate` (JS in pagina)
+- [ ] Tool `browser_evaluate` (JS in page)
 - [ ] Tool `browser_wait_for` (timeout + selector)
-- [ ] `browser_open` chiama automaticamente close se contesto attivo
-- [ ] Session recovery: crash del context → auto-reopen su prossimo tool call
+- [ ] `browser_open` automatically closes an active context
+- [ ] Session recovery: context crash -> auto-reopen on the next tool call
 
-Deliverable: agente puo' fare interazioni complete cross-profile.
+Deliverable: the agent can perform full cross-profile interactions.
 
-## v0.4.0 — Esempi + docs (target +2-3 giorni)
+## v0.4.0 ... examples + docs (target +2-3 days)
 
 - [ ] `examples/multi-account-test.md` prompt + expected output
 - [ ] `examples/cross-browser-audit.md`
 - [ ] `examples/fingerprint-diff.md`
-- [ ] `docs/TOOLS.md` schema completo
+- [ ] `docs/TOOLS.md` full schema
 - [ ] `docs/COMPARISON.md` vs @playwright/mcp
-- [ ] `docs/TROUBLESHOOTING.md` errori comuni cross-platform
-- [ ] Screenshot GIF nel README (Playwright headed che gira contro mysupportdetails)
+- [ ] `docs/TROUBLESHOOTING.md` common cross-platform errors
+- [ ] README screenshot GIF (Playwright headed running against mysupportdetails)
 
-Deliverable: repo pubblicabile pronto per public launch.
+Deliverable: repo publishable, ready for public launch.
 
-## v1.0.0 — Public launch (target +2 giorni prep + launch day)
+## v1.0.0 ... public launch (target +2 days prep + launch day)
 
-- [ ] Semver 1.0.0 = API stabile, breaking change future in v2
+- [ ] Semver 1.0.0 = stable API, future breaking changes in v2
 - [ ] LICENSE MIT
 - [ ] CONTRIBUTING.md
 - [ ] CODE_OF_CONDUCT.md
-- [ ] GitHub Actions CI (ubuntu/macos/windows × node 18/20/22)
-- [ ] Repo public su github.com/KuramaLab/mysupportdetails-mcp
+- [ ] GitHub Actions CI (ubuntu/macos/windows x node 18/20/22)
+- [ ] Public repo at github.com/KuramaLab/mysupportdetails-mcp
 - [ ] npm publish public
-- [ ] Article su mysupportdetails.com/it/web/... che punta al repo
-- [ ] Launch: Product Hunt + Hacker News Show + r/ClaudeAI + r/LocalLLaMA + Discord Anthropic
+- [ ] Article on mysupportdetails.com/en/web/... linking to the repo
+- [ ] Launch: Product Hunt + Hacker News Show + r/ClaudeAI + r/LocalLLaMA + Anthropic Discord
 
-Deliverable: v1.0.0 live, articolo attivo, minimo 50 GitHub stars in prima settimana (target realistico).
+Deliverable: v1.0.0 live, article live, minimum 50 GitHub stars in the first week (realistic target).
 
-## Publishing model + separazione personale/azienda
+## Publishing model + personal/company separation
 
-Durante lo sviluppo (v0.1 -> v0.4) mysupportdetails-mcp vive come cartella `mysupportdetails-mcp/`
-dentro il mono-repo privato `gitlab.com/michelmarrazzo/mysupportdetails.com`.
-Motivo: dev speed, working directory unica, commit atomici cross-progetto
-(es. articolo del sito + release npm allineati).
+During development (v0.1 -> v0.4) mysupportdetails-mcp lives as a `mysupportdetails-mcp/`
+folder inside the private mono-repo `gitlab.com/michelmarrazzo/mysupportdetails.com`.
+Reason: dev speed, single working directory, atomic cross-project commits
+(e.g. the site article and the npm release land together).
 
-**Pre-launch v1.0.0** viene estratto in repo GitHub public separato,
-mantenendo la history dei soli commit che toccano `mysupportdetails-mcp/`:
+**Pre-launch v1.0.0** it is extracted into a separate public GitHub repo,
+keeping only the history of commits that touch `mysupportdetails-mcp/`:
 
 ```
-# in un clone del mono-repo (mai sul repo di lavoro)
+# in a clone of the mono-repo (never on the working repo)
 git filter-repo --path mysupportdetails-mcp/ --path-rename mysupportdetails-mcp/:
 git remote add origin git@github.com:KuramaLab/mysupportdetails-mcp.git
 git push -u origin main
 ```
 
-Da quel momento in poi:
+From that point on:
 
-- **`gitlab.com/michelmarrazzo/mysupportdetails.com`** = codebase personale
-  (sito PHP + storia dev mysupportdetails-mcp fino all'estrazione). Rimane privato.
-- **`github.com/KuramaLab/mysupportdetails-mcp`** = prodotto azienda public. Da qui in poi
-  ogni sviluppo mysupportdetails-mcp avviene direttamente sul repo GitHub, non piu' nel
-  mono-repo GitLab.
-- **npm registry `@kuramalab`** scope org (non profilo personale).
-- **Articoli sito mysupportdetails** puntano al repo GitHub (backlink SEO,
+- **`gitlab.com/michelmarrazzo/mysupportdetails.com`** = personal codebase
+  (PHP site + mysupportdetails-mcp dev history up to the extraction). Stays private.
+- **`github.com/KuramaLab/mysupportdetails-mcp`** = public company product. All future
+  mysupportdetails-mcp development happens directly on the GitHub repo, no longer inside
+  the GitLab mono-repo.
+- **npm registry `@kuramalab`** org scope (not a personal account).
+- **mysupportdetails site articles** link to the GitHub repo (SEO backlink,
   authority signal).
 
-Questa separazione garantisce che:
+This separation guarantees that:
 
-- Nessun asset personale (secrets, config, monetization) finisca in un repo
-  pubblico per errore.
-- Il brand KuramaLab e' pulitamente separato dall'identita' personale
-  michelmarrazzo agli occhi della community open source.
-- Contributori esterni al progetto vedono solo mysupportdetails-mcp, non tutto il mono-repo.
+- No personal asset (secrets, config, monetization) accidentally ends up in a
+  public repo.
+- The KuramaLab brand is cleanly separated from the personal
+  michelmarrazzo identity in the eyes of the open-source community.
+- External contributors see only mysupportdetails-mcp, not the whole mono-repo.
 
-## v2.0.0 — Encryption at-rest opt-in (target Q4 2026)
+## v2.0.0 ... opt-in encryption at-rest (target Q4 2026)
 
-- [ ] Flag `--encrypt` in server startup
-- [ ] AES-256-GCM su tutti i file del profilo
-- [ ] Chiave master in OS keychain:
+- [ ] `--encrypt` flag at server startup
+- [ ] AES-256-GCM over every profile file
+- [ ] Master key in the native OS keychain:
   - macOS: `keytar` (Keychain Services)
   - Linux: `keytar` (libsecret)
   - Windows: `keytar` (DPAPI Credential Manager)
-- [ ] Fallback password prompt se keychain non disponibile
-- [ ] Migration script v0.x -> v2 (encrypt profili esistenti opt-in)
-- [ ] Test cross-platform su tre OS
-- [ ] Doc update SECURITY.md
+- [ ] Fallback password prompt if the keychain is unavailable
+- [ ] Migration script v0.x -> v2 (opt-in encrypt of existing profiles)
+- [ ] Cross-platform test on all three OSes
+- [ ] Doc update in SECURITY.md
 
-Deliverable: mysupportdetails-mcp utilizzabile per casi security-sensitive.
+Deliverable: mysupportdetails-mcp usable for security-sensitive scenarios.
 
-## v3.0.0 — Multi-context + remote transport (long-term)
+## v3.0.0 ... multi-context + remote transport (long-term)
 
-- [ ] Tool `browser_open` accetta `contextId` opt-in
-- [ ] `browser_switch_context({contextId})` per attivare uno specifico
-- [ ] Refactor state manager per lifecycle N contesti
-- [ ] Optional HTTP/WebSocket transport per MCP server remoto
-- [ ] Auth token + rate limit per transport remoto
-- [ ] Docker image per deploy MCP server headless in cluster
+- [ ] `browser_open` tool accepts opt-in `contextId`
+- [ ] `browser_switch_context({contextId})` to activate a specific one
+- [ ] Refactor of the state manager for N-context lifecycle
+- [ ] Optional HTTP/WebSocket transport to run the MCP server remotely
+- [ ] Auth token + rate limit on the remote transport
+- [ ] Docker image to deploy the headless MCP server in a cluster
 
-Deliverable: casi enterprise cross-team + testing farm.
+Deliverable: enterprise cross-team scenarios + testing farms.
 
-## Metriche di successo
+## Success metrics
 
 - **v1.0.0 week 1**: 50 GitHub stars, 500 npm downloads
-- **v1.0.0 month 1**: 200 stars, 2000 downloads, 3 issue esterne
-- **v1.0.0 month 3**: 500 stars, 10k downloads, 5 contributori esterni
-- **v2.0.0 month 6**: 1k stars, adozione documentata da almeno 2 team enterprise
+- **v1.0.0 month 1**: 200 stars, 2000 downloads, 3 external issues
+- **v1.0.0 month 3**: 500 stars, 10k downloads, 5 external contributors
+- **v2.0.0 month 6**: 1k stars, documented adoption by at least 2 enterprise teams
 
-## Non-goals (esplicitamente FUORI scope)
+## Non-goals (explicitly OUT of scope)
 
-- **Browser diversi da Chromium/Firefox/WebKit** (es. Brave, Opera, Edge separati). Chi vuole Brave usa Chromium con l'extension Brave nel profilo.
-- **Mobile emulation via device manager** (usa DevTools mobile emulation via browser_evaluate se serve).
-- **Screen recording video**: fuori dominio MCP. Chi vuole video usa Playwright direttamente in test.
-- **Assertions framework**: mysupportdetails-mcp è un provider di capabilities, non un test runner.
-- **UI dashboard web**: agente ha già accesso, non serve GUI aggiuntiva.
+- **Browsers other than Chromium/Firefox/WebKit** (e.g. Brave, Opera, Edge as separate targets). If you want Brave, use Chromium with the Brave extension in the profile.
+- **Mobile emulation via device manager** (use the DevTools mobile emulation via `browser_evaluate` if you need it).
+- **Video screen recording**: outside the MCP domain. If you need video, use Playwright directly in tests.
+- **Assertions framework**: mysupportdetails-mcp is a capabilities provider, not a test runner.
+- **Web UI dashboard**: the agent already has access, no extra GUI needed.

@@ -1,7 +1,7 @@
 {
   "name": "@kuramalab-io/mysupportdetails-mcp",
   "version": "0.1.0",
-  "description": "MCP server specializzato per QA e test automation: browser reali (Chromium/Firefox/WebKit) con profili persistenti multipli e runtime switching. Alternativa a @playwright/mcp per team QA.",
+  "description": "MCP server for QA and test automation: real browsers (Chromium/Firefox/WebKit) with multiple persistent profiles and runtime switching. Alternative to @playwright/mcp for QA teams.",
   "type": "module",
   "keywords": [
     "mcp",

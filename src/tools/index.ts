@@ -1,5 +1,5 @@
-// Registry centrale di tutti i tool MCP. Importa ogni file singolo e li registra
-// col McpServer dell'SDK in un solo giro.
+// Central registry of every MCP tool. Imports each file and registers it
+// with the SDK McpServer in a single pass.
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import * as browserOpen from './browser_open.js';

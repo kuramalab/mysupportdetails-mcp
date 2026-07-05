@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-// Nome profilo: solo caratteri filesystem-safe, max 64 char.
-// Impedisce path traversal (../, /, \), null byte injection, nomi troppo lunghi,
-// e nomi composti da soli punti (`.`, `..`, `...`) che risolverebbero a
-// current-dir / parent-dir sul filesystem.
+// Profile name: only filesystem-safe characters, max 64 chars.
+// Blocks path traversal (../, /, \), null byte injection, names that are too long,
+// and dot-only names (`.`, `..`, `...`) that would resolve to
+// current-dir / parent-dir on the filesystem.
 export const PROFILE_NAME_REGEX = /^(?!\.+$)[a-zA-Z0-9._-]{1,64}$/;
 
 export const BrowserEnum = z.enum(['chromium', 'firefox', 'webkit']);
@@ -20,9 +20,9 @@ export const ViewportSchema = z
   })
   .default({ width: 1440, height: 900 });
 
-// Ref di un elemento nel snapshot. Il snapshot restituisce ref come "e12",
-// il tool successivo (click/type) lo riusa. Formato generico per non
-// bloccarci su convenzione specifica.
+// Ref of an element in a snapshot. The snapshot returns refs like "e12",
+// the next tool (click/type) reuses them. Generic format so we do not lock
+// into a specific convention.
 export const ElementRef = z.string().min(1).max(64);
 
 export type Result<T> =

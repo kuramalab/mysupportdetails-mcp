@@ -3,9 +3,9 @@ import { join, resolve, sep } from 'node:path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync, renameSync, statSync, readdirSync } from 'node:fs';
 import { PROFILE_NAME_REGEX, type BrowserName } from './schemas.js';
 
-// Root di tutti i dati locali del server MCP. Path corto per non allungare
-// troppo i path Windows (MAX_PATH=260 default) quando si aggiungono le
-// sotto-cartelle profilo del browser.
+// Root of all local MCP server data. Short path to avoid pushing Windows paths
+// past the default MAX_PATH=260 limit when appending browser and profile
+// subfolders.
 const ROOT = join(homedir(), '.msd');
 const PROFILES_ROOT = join(ROOT, 'profiles');
 const REGISTRY_PATH = join(ROOT, 'profiles.json');
@@ -14,7 +14,7 @@ const REGISTRY_VERSION = 1;
 export interface ProfileMeta {
   browser: BrowserName;
   name: string;
-  path: string; // relativo a ROOT
+  path: string; // relative to ROOT
   created: string; // ISO
   last_used: string | null;
   size_mb: number;
@@ -44,14 +44,14 @@ function readRegistry(): Registry {
     }
     return parsed;
   } catch {
-    // Registry corrotto: torniamo lista vuota (i profili on-disk restano intatti).
+    // Corrupted registry: return an empty list (on-disk profiles stay intact).
     return { version: REGISTRY_VERSION, profiles: [] };
   }
 }
 
 function writeRegistry(reg: Registry): void {
   ensureRoot();
-  // Atomic write: tmp file + rename. Sopravvive a crash mid-write.
+  // Atomic write: tmp file + rename. Survives a crash mid-write.
   const tmp = `${REGISTRY_PATH}.tmp`;
   writeFileSync(tmp, JSON.stringify(reg, null, 2), 'utf-8');
   renameSync(tmp, REGISTRY_PATH);
@@ -79,7 +79,7 @@ function dirSizeBytes(dir: string): number {
           total += s.size;
         }
       } catch {
-        // Ignora entry inaccessibili.
+        // Ignore inaccessible entries.
       }
     }
   }
@@ -87,9 +87,9 @@ function dirSizeBytes(dir: string): number {
 }
 
 /**
- * Risolve il path assoluto di un profilo con confinamento sicuro sotto PROFILES_ROOT.
- * Blocca path traversal (../), nomi con separator, null byte.
- * Throw se il nome non passa la validazione.
+ * Resolves the absolute path of a profile with safe confinement under PROFILES_ROOT.
+ * Blocks path traversal (../), names with separator, null byte.
+ * Throws if the name does not pass validation.
  */
 export function resolveProfilePath(browser: BrowserName, name: string): string {
   if (!PROFILE_NAME_REGEX.test(name)) {
@@ -114,7 +114,7 @@ export function listProfiles(filterBrowser?: BrowserName): ProfileMeta[] {
   const items = filterBrowser === undefined
     ? reg.profiles
     : reg.profiles.filter((p) => p.browser === filterBrowser);
-  // Ricalcola size on-the-fly (piu' accurato del cached).
+  // Recompute size on-the-fly (more accurate than the cached value).
   return items.map((meta) => {
     const abs = join(ROOT, meta.path);
     const bytes = existsSync(abs) ? dirSizeBytes(abs) : 0;
@@ -145,15 +145,15 @@ export function createProfile(browser: BrowserName, name: string, notes: string 
 }
 
 /**
- * Assicura che un profilo esista. Se non presente, lo crea con default metadata.
- * Usato da browser_open quando l'agente specifica un nome nuovo al volo.
+ * Ensures a profile exists. If missing, it is created with default metadata.
+ * Used by browser_open when the agent specifies a new name on the fly.
  */
 export function ensureProfile(browser: BrowserName, name: string): ProfileMeta {
   if (profileExists(browser, name)) {
     const reg = readRegistry();
     const found = reg.profiles.find((p) => p.browser === browser && p.name === name);
     if (found !== undefined) return found;
-    // Dir on-disk esiste ma non registrata: la registriamo ora (recovery).
+    // On-disk dir exists but is not registered: register it now (recovery).
     const now = new Date().toISOString();
     const meta: ProfileMeta = {
       browser,
@@ -190,5 +190,5 @@ export function markLastUsed(browser: BrowserName, name: string): void {
   }
 }
 
-// Utili per test e ispezione esterna.
+// Useful for tests and external inspection.
 export const _internals = { ROOT, PROFILES_ROOT, REGISTRY_PATH };

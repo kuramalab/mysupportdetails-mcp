@@ -1,9 +1,9 @@
 import { build } from 'esbuild';
 
-// Build single-file ESM bundle per il server MCP.
-// Playwright lasciato esterno perche' scarica browser (~300MB) al primo run
-// tramite `npx playwright install`. Includerlo nel bundle romperebbe l'install
-// dei browser e triplicherebbe la dimensione del pacchetto npm.
+// Build a single-file ESM bundle for the MCP server.
+// Playwright is left external because it downloads browsers (~300MB) on first run
+// via `npx playwright install`. Bundling it would break the browser install
+// and triple the npm package size.
 await build({
   entryPoints: ['src/server.ts'],
   bundle: true,
@@ -15,7 +15,7 @@ await build({
   banner: {
     js: '#!/usr/bin/env node\n' +
         '// @kuramalab-io/mysupportdetails-mcp\n' +
-        '// MCP server per QA + test automation con browser + profili multipli.\n' +
+        '// MCP server for QA + test automation with browsers + multiple profiles.\n' +
         '// Source: https://github.com/KuramaLab/mysupportdetails-mcp\n' +
         '// License: MIT (c) 2026 KuramaLab',
   },
@@ -24,7 +24,7 @@ await build({
   logLevel: 'info',
 });
 
-// Su Unix serve chmod +x sullo shebang. Su Windows non necessario.
+// On Unix we need chmod +x on the shebang. Not needed on Windows.
 import { chmodSync } from 'node:fs';
 if (process.platform !== 'win32') {
   chmodSync('dist/server.mjs', 0o755);

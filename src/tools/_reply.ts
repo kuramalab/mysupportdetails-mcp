@@ -1,5 +1,5 @@
-// Helper per costruire la reply MCP standard {content: [{type:'text', text}]}
-// da qualsiasi valore serializzabile.
+// Helper to build the standard MCP reply {content: [{type:'text', text}]}
+// from any serializable value.
 export function jsonReply(value: unknown): { content: Array<{ type: 'text'; text: string }> } {
   return {
     content: [
