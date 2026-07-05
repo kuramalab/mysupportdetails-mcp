@@ -1,4 +1,4 @@
-﻿# @kuramalab/mysupportdetails-mcp
+# @kuramalab-io/mysupportdetails-mcp
 
 > **MCP server specializzato per QA, Quality Assurance e test automation** — agente AI che pilota browser reali (Chromium / Firefox / WebKit) e profili persistenti multipli, con **runtime switching** tra profili e browser senza restart.
 
@@ -24,7 +24,7 @@ Progettato con **[MySupportDetails.com](https://www.mysupportdetails.com/)** com
 
 Sviluppato da [KuramaLab](https://github.com/KuramaLab). MIT license. Multi-piattaforma: **macOS, Linux, Windows**.
 
-Source: [github.com/KuramaLab/mysupportdetails-mcp](https://github.com/KuramaLab/mysupportdetails-mcp) — npm: [`@kuramalab/mysupportdetails-mcp`](https://www.npmjs.com/package/@kuramalab/mysupportdetails-mcp).
+Source: [github.com/KuramaLab/mysupportdetails-mcp](https://github.com/KuramaLab/mysupportdetails-mcp) — npm: [`@kuramalab-io/mysupportdetails-mcp`](https://www.npmjs.com/package/@kuramalab-io/mysupportdetails-mcp).
 
 ## Comportamento di default: browser VISIBILE
 
@@ -73,7 +73,7 @@ Nessuna dipendenza vendor-lock: zero API key cloud, zero binding a modello LLM. 
 Con Claude Code:
 
 ```
-claude mcp add -s user playwright -- npx -y @kuramalab/mysupportdetails-mcp@latest
+claude mcp add -s user playwright -- npx -y @kuramalab-io/mysupportdetails-mcp@latest
 ```
 
 Con Cursor / Cline: aggiungi al file `mcp_settings.json`:
@@ -83,7 +83,7 @@ Con Cursor / Cline: aggiungi al file `mcp_settings.json`:
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@kuramalab/mysupportdetails-mcp@latest"]
+      "args": ["-y", "@kuramalab-io/mysupportdetails-mcp@latest"]
     }
   }
 }
@@ -171,7 +171,7 @@ Vedi cartella `examples/`:
 
 ## Confronto con @playwright/mcp
 
-| Feature | @playwright/mcp ufficiale | @kuramalab/mysupportdetails-mcp |
+| Feature | @playwright/mcp ufficiale | @kuramalab-io/mysupportdetails-mcp |
 |---|---|---|
 | Chromium / Firefox / WebKit | ✓ flag `--browser` (statico) | ✓ runtime switching |
 | Profilo persistente | ✓ flag `--user-data-dir` (statico) | ✓ runtime switching |

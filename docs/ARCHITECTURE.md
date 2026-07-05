@@ -1,4 +1,4 @@
-﻿# Architecture
+# Architecture
 
 ## Stack tecnico
 
@@ -162,7 +162,7 @@ Semplifica lo state model. Un tool call agisce sul contesto attivo. Cambio profi
 
 - **Unit** (vitest): `profile-store` (mock filesystem via memfs), `browser-manager` state transitions
 - **Integration** (playwright test runner): full flow contro `https://example.com` (dominio safe, stable)
-- **E2E smoke** (post-publish): install `npx @kuramalab/mysupportdetails-mcp@latest` in Docker + navigate mysupportdetails + verify JSON output
+- **E2E smoke** (post-publish): install `npx @kuramalab-io/mysupportdetails-mcp@latest` in Docker + navigate mysupportdetails + verify JSON output
 - CI matrix: `ubuntu-latest`, `macos-latest`, `windows-latest` × Node 18/20/22
 
 ## Build & distribution

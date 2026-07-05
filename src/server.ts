@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Entry point del server MCP @kuramalab/mysupportdetails-mcp.
+// Entry point del server MCP @kuramalab-io/mysupportdetails-mcp.
 //
 // Comunicazione col client (Claude Code, Cursor, Cline, ecc.) via stdio:
 // - stdout: RISERVATO al protocollo JSON-RPC MCP. Qualsiasi write "spurio"

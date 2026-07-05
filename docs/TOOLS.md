@@ -1,6 +1,6 @@
-﻿# MCP Tools Schema
+# MCP Tools Schema
 
-Schema completo di tutti i tool esposti da `@kuramalab/mysupportdetails-mcp`. Compatibile con Claude Code, Cursor, Cline.
+Schema completo di tutti i tool esposti da `@kuramalab-io/mysupportdetails-mcp`. Compatibile con Claude Code, Cursor, Cline.
 
 ## Convenzioni
 

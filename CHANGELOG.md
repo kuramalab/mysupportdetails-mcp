@@ -1,6 +1,6 @@
 # Changelog
 
-Tutti i cambiamenti rilevanti a `@kuramalab/mysupportdetails-mcp`.
+Tutti i cambiamenti rilevanti a `@kuramalab-io/mysupportdetails-mcp`.
 
 Formato: [Keep a Changelog](https://keepachangelog.com/it-IT/1.1.0/).
 Versioning: [Semantic Versioning 2.0.0](https://semver.org/lang/it/).

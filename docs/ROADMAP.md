@@ -1,4 +1,4 @@
-﻿# Roadmap
+# Roadmap
 
 ## v0.1.0 — MVP funzionale (target 5-7 giorni dev)
 
@@ -16,7 +16,7 @@
 - [ ] Test unit su browser-manager state machine
 - [ ] Test E2E: install locale + navigate mysupportdetails + verify title
 
-Deliverable: `npm publish @kuramalab/mysupportdetails-mcp@0.1.0` funzionante su macOS/Linux/Windows.
+Deliverable: `npm publish @kuramalab-io/mysupportdetails-mcp@0.1.0` funzionante su macOS/Linux/Windows.
 
 ## v0.2.0 — Profili named + CRUD (target +3-4 giorni)
 

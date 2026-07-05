@@ -14,7 +14,7 @@ await build({
   external: ['playwright', 'playwright-core'],
   banner: {
     js: '#!/usr/bin/env node\n' +
-        '// @kuramalab/mysupportdetails-mcp\n' +
+        '// @kuramalab-io/mysupportdetails-mcp\n' +
         '// MCP server per QA + test automation con browser + profili multipli.\n' +
         '// Source: https://github.com/KuramaLab/mysupportdetails-mcp\n' +
         '// License: MIT (c) 2026 KuramaLab',
