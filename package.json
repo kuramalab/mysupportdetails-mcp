@@ -1,0 +1,64 @@
+{
+  "name": "@kuramalab/mysupportdetails-mcp",
+  "version": "0.1.0",
+  "description": "MCP server specializzato per QA e test automation: browser reali (Chromium/Firefox/WebKit) con profili persistenti multipli e runtime switching. Alternativa a @playwright/mcp per team QA.",
+  "type": "module",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "playwright",
+    "browser-automation",
+    "qa",
+    "quality-assurance",
+    "testing",
+    "e2e",
+    "claude",
+    "claude-code",
+    "cursor",
+    "cline",
+    "mysupportdetails"
+  ],
+  "author": "KuramaLab <hello@mysupportdetails.com>",
+  "license": "MIT",
+  "homepage": "https://www.mysupportdetails.com/web/how-to-install-mysupportdetails-mcp-server-claude-code-cursor/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KuramaLab/mysupportdetails-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KuramaLab/mysupportdetails-mcp/issues"
+  },
+  "bin": {
+    "mysupportdetails-mcp": "dist/server.mjs"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "clean": "node -e \"import('node:fs').then(fs => fs.rmSync('dist', {recursive: true, force: true}))\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run clean && npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "playwright": "^1.48.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0",
+    "memfs": "^4.11.0"
+  }
+}

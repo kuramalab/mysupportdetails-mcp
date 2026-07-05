@@ -1,0 +1,11 @@
+src/
+tests/
+docs/
+esbuild.config.mjs
+vitest.config.ts
+tsconfig.json
+.eslintrc*
+.github/
+.gitignore
+*.tsbuildinfo
+coverage/
