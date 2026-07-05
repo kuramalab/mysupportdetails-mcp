@@ -1,0 +1,40 @@
+name: Publish to npm (OIDC)
+
+# Trigger su tag vX.Y.Z. Il workflow pubblica @kuramalab-io/mysupportdetails-mcp
+# usando OIDC identity di GitHub Actions come trusted publisher.
+# Vedi https://docs.npmjs.com/trusted-publishers
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      # id-token: write e' obbligatorio per OIDC provenance
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      # npm >= 11.5.1 richiesto per trusted publisher OIDC completo
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Typecheck + test + build
+        run: |
+          npm run typecheck
+          npm run test
+          npm run build
+
+      - name: Publish (OIDC, provenance)
+        run: npm publish --provenance --access public
